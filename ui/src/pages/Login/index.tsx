@@ -2,9 +2,10 @@ import React, { useContext, useState } from "react";
 
 import { login } from "../../lib/user";
 import { UserContext } from "../../contexts/UserContext";
+import { GoogleSignInButton } from "../../components/GoogleSignInButton";
 
 import { Form, Field } from "react-final-form";
-import { Input, Button, Checkbox } from "semantic-ui-react";
+import { Input, Button, Divider } from "semantic-ui-react";
 import styled from "styled-components";
 import { useHistory } from "react-router-dom";
 
@@ -15,14 +16,10 @@ export const Login = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  const handleRedirect = (route: string) => {
-    history.push(`/${route}`);
-  }
-
   return (
     <Container>
       <Form
-        validate={(values: { username: string; password: string; }) => {
+        validate={(values: { username: string; password: string }) => {
           const errors: any = {};
 
           if (!values.username) {
@@ -34,7 +31,7 @@ export const Login = () => {
 
           return errors;
         }}
-        onSubmit={async (fields: { username: string; password: string; }) => {
+        onSubmit={async (fields: { username: string; password: string }) => {
           try {
             setLoading(true);
             setError(undefined);
@@ -59,13 +56,39 @@ export const Login = () => {
           <form onSubmit={handleSubmit}>
             <LoginWrapper>
               <LoginContent>
-                <h2>Login</h2>
+                <LoginContainerHeaderWrapper>
+                  <h2>Login to your account</h2>
+                </LoginContainerHeaderWrapper>
                 <FieldContainerWrapper>
                   <TextField type="text" name="username" label="Username" />
                   <TextField type="password" name="password" label="Password" />
+                  <div
+                    style={{
+                      height: "45px",
+                      display: "flex",
+                      alignItems: "flex-end",
+                    }}
+                  >
+                    <Button
+                      fluid
+                      inverted
+                      type="submit"
+                      loading={loading}
+                      disabled={loading}
+                    >
+                      Login
+                    </Button>
+                  </div>
+                  <RegisterWrapper>
+                    <a href="#">Don't have an account? Register</a>
+                  </RegisterWrapper>
+                  <div>
+                    <Divider horizontal inverted>
+                      OR
+                    </Divider>
+                  </div>
+                  <GoogleSignInButton />
                 </FieldContainerWrapper>
-                <Button color="blue" type="submit" loading={loading} disabled={loading}>Submit</Button>
-                <Button color="green" type="button" onClick={() => handleRedirect("register")}>Register</Button>
                 {error && <p className="validate-error">{error}</p>}
               </LoginContent>
             </LoginWrapper>
@@ -73,14 +96,14 @@ export const Login = () => {
         )}
       />
     </Container>
-  )
+  );
 };
 
 type TextFieldProps = {
   type: string;
   name: string;
   label: string;
-}
+};
 
 const TextField: React.FC<TextFieldProps> = ({ type, name, label }) => (
   <Field
@@ -89,12 +112,16 @@ const TextField: React.FC<TextFieldProps> = ({ type, name, label }) => (
     render={({ meta, input }) => (
       <FieldContainer>
         <label>{label}</label>
-        <Input {...input} placeholder={label} fluid />
-        {meta.error && meta.touched ? <span className="validate-error">{meta.error}</span> : <></>}
+        <DarkInput {...input} autoComplete="off" fluid />
+        {meta.error && meta.touched ? (
+          <span className="validate-error">{meta.error}</span>
+        ) : (
+          <></>
+        )}
       </FieldContainer>
     )}
   />
-)
+);
 
 const Container = styled.div`
   max-height: 100vh;
@@ -107,6 +134,12 @@ const Container = styled.div`
   }
 `;
 
+const LoginContainerHeaderWrapper = styled.div`
+  color: #d4d4d4;
+  width: 100%;
+  text-align: center;
+`;
+
 const LoginWrapper = styled.div`
   position: absolute;
   left: 50%;
@@ -116,17 +149,19 @@ const LoginWrapper = styled.div`
 `;
 
 const LoginContent = styled.div`
+  display: grid;
+  gap: 20px;
   padding: 20px;
   background-color: #1f1f1f;
+  border: 1px solid #181818;
   h2 {
-    color: #fafafa;
+    color: #d4d4d4;
   }
 `;
 
 const FieldContainerWrapper = styled.div`
   display: grid;
-  grid-gap: 10px;
-  margin-bottom: 15px;
+  row-gap: 10px;
 `;
 
 const FieldContainer = styled.div`
@@ -141,8 +176,19 @@ const FieldContainer = styled.div`
   }
 `;
 
-const CheckboxStyled = styled(Checkbox)`
-  &&&&& label {
+const DarkInput = styled(Input)`
+  &&&& input {
+    background-color: #333;
     color: #d4d4d4;
+  }
+`;
+
+const RegisterWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+  height: 25px;
+  a {
+    color: #d4d4d4;
+    font-size: 12px;
   }
 `;

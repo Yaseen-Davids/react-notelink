@@ -1,6 +1,20 @@
 const LocalStrategy = require("passport-local").Strategy;
-const { GetUserByUsername, GetUserById, GetUserByToken } = require("../repositories/user");
+const GoogleStrategy = require("passport-google-oauth").OAuth2Strategy;
 const bcrypt = require("bcryptjs");
+
+const {
+  GetUserByUsername,
+  GetUserById,
+  GetUserByToken,
+  GetUserByEmail,
+  CreateUser,
+} = require("../repositories/user");
+
+const generateUsername = (name) => {
+  let str = name.split(" ").join("");
+  str = str + Math.floor(Math.random() * 1000 + 100);
+  return str;
+};
 
 module.exports = (passport) => {
   passport.use(
@@ -46,6 +60,34 @@ module.exports = (passport) => {
         return done(null, false, { message: error });
       }
     })
+  );
+
+  passport.use(
+    "google",
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "http://localhost:4000/api/users/auth/google/callback",
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        const { email, name } = profile._json;
+
+        let user = await GetUserByEmail(email);
+
+        if (!user) {
+          const person = {
+            username: generateUsername(name),
+            email: email,
+            password: accessToken,
+          };
+          const resp = await CreateUser(person);
+          user = resp[0];
+        }
+
+        return done(null, user);
+      }
+    )
   );
 
   passport.serializeUser((user, done) => {

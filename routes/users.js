@@ -2,8 +2,16 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 
-const { CreateUser, updateUserTokenById, GetUserById, checkTokenExists } = require("../repositories/user");
-const { ensureAuthenticated, createHashToken } = require("../repositories/base");
+const {
+  CreateUser,
+  updateUserTokenById,
+  GetUserById,
+  checkTokenExists,
+} = require("../repositories/user");
+const {
+  ensureAuthenticated,
+  createHashToken,
+} = require("../repositories/base");
 
 router.get("/whoami", ensureAuthenticated, async (req, res, next) => {
   try {
@@ -94,6 +102,38 @@ router.post("/register", async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+});
+
+router.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: [
+      "https://www.googleapis.com/auth/plus.login",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ],
+  })
+);
+
+router.get("/auth/google/callback", (req, res, next) => {
+  passport.authenticate("google", (err, user) => {
+    try {
+      if (err) {
+        throw err;
+      }
+      if (!user) {
+        throw "User not found";
+      }
+      req.logIn(user, async (error) => {
+        if (error) {
+          throw new Error(error);
+        }
+        const token = user.token;
+        res.redirect(`http://localhost:3000/token/${token}`);
+      });
+    } catch (error) {
+      return next(error);
+    }
+  })(req, res, next);
 });
 
 module.exports = router;

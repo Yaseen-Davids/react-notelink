@@ -1,7 +1,7 @@
 export type Loading = {
   loading: boolean;
   loaded: boolean;
-  error?: Error | undefined;
+  error?: Error | undefined | null;
 };
 
 export const defaultLoading = {

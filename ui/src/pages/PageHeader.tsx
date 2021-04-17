@@ -8,7 +8,7 @@ import { useHistory } from "react-router-dom";
 
 type PageHeaderProps = {};
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ }) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({}) => {
   const { loggedIn } = useContext(LoginContext);
   const { loading: userLoading } = useContext(UserContext);
 
@@ -24,16 +24,18 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ }) => {
     localStorage.setItem("login-token", "");
     logout();
     history.go(0); // refresh page
-  }
+  };
 
   const handleLoginRedirect = () => {
     history.push(`/login`);
-  }
+  };
 
   return (
     <>
       <Header>
-        <a href="/"><h2>Notepad</h2></a>
+        <a href="/">
+          <h2>Notelink</h2>
+        </a>
         <div style={{ minWidth: "200px", textAlign: "right" }}>
           <DropdownSelect
             button
@@ -45,19 +47,32 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ }) => {
             <Dropdown.Menu>
               {!userLoading.loading && userLoading.loaded ? (
                 !isLoggedIn ? (
-                  <DropdownItem icon="arrow right" text="Login" onClick={handleLoginRedirect} />
+                  <DropdownItem
+                    icon="arrow right"
+                    text="Login"
+                    onClick={handleLoginRedirect}
+                  />
                 ) : (
-                    <DropdownItem icon="arrow left" text="Logout" onClick={handleLogout} />
-                  )) : (
-                  <DropdownItem icon="arrow right" text="Login" onClick={handleLoginRedirect} />
-                )}
+                  <DropdownItem
+                    icon="arrow left"
+                    text="Logout"
+                    onClick={handleLogout}
+                  />
+                )
+              ) : (
+                <DropdownItem
+                  icon="arrow right"
+                  text="Login"
+                  onClick={handleLoginRedirect}
+                />
+              )}
             </Dropdown.Menu>
           </DropdownSelect>
         </div>
       </Header>
     </>
-  )
-}
+  );
+};
 
 const Header = styled.div`
   grid-area: header;

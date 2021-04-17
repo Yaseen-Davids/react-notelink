@@ -1,19 +1,19 @@
 import React, { createContext, useMemo, useState } from "react";
 import { defaultLoading } from "../models/loading";
-import { Loading } from "../models/base";
+import { Loading } from "../models/loading";
 import { whoami } from "../lib/user";
 
 const defaultUser = {
   id: 0,
   email: "",
-  username: ""
+  username: "",
 };
 
 type User = {
   id: number;
   email: string;
   username: string;
-}
+};
 
 export type UserContextState = {
   loading: Loading;
@@ -23,8 +23,8 @@ export type UserContextState = {
 
 export const UserContext = createContext<UserContextState>({
   loading: defaultLoading,
-  hydrateUser: () => { },
-  user: defaultUser
+  hydrateUser: () => {},
+  user: defaultUser,
 });
 
 export const UserProvider: React.FC = ({ children }) => {
@@ -52,18 +52,16 @@ export const UserProvider: React.FC = ({ children }) => {
         error: error,
       });
     }
-  }
+  };
 
-  const value = useMemo(() => ({
-    loading,
-    hydrateUser,
-    user
-  }), [
-    loading, ,
-    user
-  ]);
+  const value = useMemo(
+    () => ({
+      loading,
+      hydrateUser,
+      user,
+    }),
+    [loading, , user]
+  );
 
-  return (
-    <UserContext.Provider value={value}>{children}</UserContext.Provider>
-  )
-}
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+};

@@ -10,10 +10,11 @@ import { UserContext, UserProvider } from "./contexts/UserContext";
 import { LoginGuard } from "./pages/Login/LoginGuard";
 import { Loading } from "./models/loading";
 import { LoginProvider } from "./contexts/LoginContext";
-import { PageHeader } from "./components/PageHeader";
+import { PageHeader } from "./pages/PageHeader";
 import { PermissionsProvider } from "./contexts/PermissionsContext";
 import { Register } from "./pages/Register";
 import { TokenLoginProvider } from "./contexts/TokenLoginContext";
+import { Token } from "./pages/Token";
 
 const shouldLoad = (loading: Loading) => {
   return !loading.loading && !loading.loaded && !loading.error;
@@ -57,6 +58,9 @@ const App: FC = () => {
                       <Container>
                         <PageHeader />
                         <Content>
+                          <Route path="/token/:token?">
+                            <Token />
+                          </Route>
                           <Route path="/" exact>
                             <Container></Container>
                           </Route>
@@ -71,16 +75,15 @@ const App: FC = () => {
         </LoginProvider>
       </TokenLoginProvider>
     </Router>
-  )
+  );
 };
 
 const Container = styled.div`
   height: 100vh;
   display: grid;
-  grid-template-areas: 
+  grid-template-areas:
     "header"
-    "content"
-  ;
+    "content";
   grid-template-rows: min-content 1fr;
   background-color: #121212;
 `;
